@@ -1,0 +1,17 @@
+-r
+C:\Users\kaslon\Desktop\IPS\Final_task\Final\Final\My Inspector Results - Final\r000mi1
+--no-access-checks
+--no-analyze-stack
+--leak-maximum=100000
+--leak-check-only
+--leak-check-on-exit
+--check-resource-leaks
+--leak-check-report-reachable
+--freelist-vol=0
+--guard-zone-size=0
+--stack-depth=8
+--no-close-console
+--mrte-mode=auto
+--heartbeat=1
+--
+C:\Users\kaslon\Desktop\IPS\Final_task\Final\x64\Release\Final.exe
