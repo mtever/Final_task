@@ -14,7 +14,7 @@ const double g_l1_min = 8.0;
 const double g_l2_min = g_l1_min;
 const double g_l0 = 5.0;
 
-const double g_precision = 0.25;
+const double g_precision = 0.1;
 
 typedef std::pair< std::vector<double>, std::vector<double> > min_max_vectors;
 typedef std::pair<Box, Box> boxes_pair;

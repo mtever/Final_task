@@ -20,7 +20,7 @@
  <contextValues type="bag"/>
  <All_Configurations-All_Platforms>
   <analysis_type_settings>
-   <selected_analysis_type_path>C:\Program Files (x86)\IntelSWTools\Inspector 2019\config\analysis_type\mi1.cfg</selected_analysis_type_path>
+   <selected_analysis_type_path>C:\Program Files (x86)\IntelSWTools\Inspector 2019\config\analysis_type\mi3.cfg</selected_analysis_type_path>
   </analysis_type_settings>
   <target_settings>
    <selected_workload>
@@ -278,6 +278,6 @@
  </All_Configurations-All_Platforms>
  <debugger_settings>
   <debugger_mode>off</debugger_mode>
-  <at_cliname>mi1</at_cliname>
+  <at_cliname>ti3</at_cliname>
  </debugger_settings>
 </root>

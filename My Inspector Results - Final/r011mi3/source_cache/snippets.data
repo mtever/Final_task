@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snippets>
+  <file name="C:\Users\kaslon\Desktop\IPS\Final_task\Final\Final\NUCovering.cpp" md5="">
+    <snippet line="18">
+      <line line="15">int main()</line>
+      <line line="16">{</line>
+      <line line="17">    setlocale(LC_ALL, "Rus");</line>
+      <line line="18"/>
+      <line line="19">    high_level_analysis main_object;</line>
+    </snippet>
+  </file>
+</snippets>

@@ -1,0 +1,43 @@
+
+=== Start: [2020/05/20 01:57:02] === 
+Analysis started...
+Result file: C:\Users\kaslon\Desktop\IPS\Final_task\Final\Final\My Inspector Results - Final\r011mi3\r011mi3.inspxe 
+Analysis started for c:\users\kaslon\desktop\ips\final_task\final\x64\release\final.exe (pid = 13552) 
+Loaded module: c:\windows\system32\kernel32.dll, address range [0x76e50000-0x76f6efff] 
+Loaded module: c:\windows\system32\ntdll.dll, address range [0x77070000-0x77219fff] 
+Loaded module: c:\users\kaslon\desktop\ips\final_task\final\x64\release\final.exe, address range [0x13fd30000-0x13fd4dfff] 
+Loaded module: c:\windows\system32\kernelbase.dll, address range [0x7fefce00000-0x7fefce69fff] 
+Loaded module: c:\program files (x86)\intelswtools\compilers_and_libraries_2019\windows\redist\intel64\compiler\cilkrts20.dll, address range [0x7fea7010000-0x7fea7062fff], minimal analysis 
+Loaded module: c:\windows\system32\user32.dll, address range [0x76f70000-0x77069fff], minimal analysis 
+Loaded module: c:\windows\system32\gdi32.dll, address range [0x7fefe110000-0x7fefe176fff] 
+Loaded module: c:\windows\system32\lpk.dll, address range [0x7fefd550000-0x7fefd55dfff] 
+Loaded module: c:\windows\system32\usp10.dll, address range [0x7fefd120000-0x7fefd1eafff] 
+Loaded module: c:\windows\system32\msvcrt.dll, address range [0x7fefe2b0000-0x7fefe34efff] 
+Loaded module: c:\windows\system32\msvcp140.dll, address range [0x7fea6f70000-0x7fea7008fff] 
+Loaded module: c:\windows\system32\vcruntime140.dll, address range [0x7feb9cc0000-0x7feb9cd5fff] 
+Loaded module: c:\windows\system32\ucrtbase.dll, address range [0x7fea6e70000-0x7fea6f63fff] 
+Loaded module: c:\windows\system32\imm32.dll, address range [0x7fefe010000-0x7fefe03dfff], minimal analysis 
+Loaded module: c:\windows\system32\msctf.dll, address range [0x7fefdb50000-0x7fefdc58fff], minimal analysis 
+Loaded module: c:\program files (x86)\intelswtools\inspector 2019\bin64\runtime\libittnotify.dll, address range [0x7fea6e30000-0x7fea6e63fff], minimal analysis 
+Process c:\users\kaslon\desktop\ips\final_task\final\x64\release\final.exe exited with code 0. Leak analysis starting. Please wait... 
+Unloaded module: C:\Windows\system32\kernel32.dll 
+Unloaded module: C:\Windows\SYSTEM32\ntdll.dll 
+Unloaded module: C:\Users\kaslon\Desktop\IPS\Final_task\Final\x64\Release\Final.exe 
+Unloaded module: C:\Windows\system32\KERNELBASE.dll 
+Unloaded module: C:\Program Files (x86)\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\compiler\cilkrts20.dll 
+Unloaded module: C:\Windows\system32\USER32.dll 
+Unloaded module: C:\Windows\system32\GDI32.dll 
+Unloaded module: C:\Windows\system32\LPK.dll 
+Unloaded module: C:\Windows\system32\USP10.dll 
+Unloaded module: C:\Windows\system32\msvcrt.dll 
+Unloaded module: C:\Windows\system32\MSVCP140.dll 
+Unloaded module: C:\Windows\system32\VCRUNTIME140.dll 
+Unloaded module: C:\Windows\system32\ucrtbase.DLL 
+Unloaded module: C:\Windows\system32\IMM32.DLL 
+Unloaded module: C:\Windows\system32\MSCTF.dll 
+Unloaded module: C:\Program Files (x86)\IntelSWTools\Inspector 2019\bin64\runtime\libittnotify.dll 
+Completed analysis for c:\users\kaslon\desktop\ips\final_task\final\x64\release\final.exe 
+Application exit code: 0 
+Result file: C:\Users\kaslon\Desktop\IPS\Final_task\Final\Final\My Inspector Results - Final\r011mi3\r011mi3.inspxe 
+Analysis completed
+=== End: [2020/05/20 01:57:14] === 

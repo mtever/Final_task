@@ -1,25 +1,15 @@
 ﻿#include "fragmentation.h"
-
-
-/*
-extern const double g_l1_max;
-extern const double g_l2_max;
-extern const double g_l1_min;
-extern const double g_l2_min;
-extern const double g_l0;
-
-extern const double g_precision;
-*/
+#include <cilk\cilk.h>
+#include <cilk\reducer_vector.h>
 
 std::vector<Box> buf_boxes;
-std::vector<Box> solution;
-std::vector<Box> not_solution;
-std::vector<Box> boundary;
-std::vector<Box> temporary_boxes;
+cilk::reducer< cilk::op_vector<Box> > solution;
+cilk::reducer< cilk::op_vector<Box> > not_solution;
+cilk::reducer< cilk::op_vector<Box> > boundary;
+cilk::reducer< cilk::op_vector<Box> > temporary_boxes;
 
 
-
-/// функции gj()
+/// gj()
 //------------------------------------------------------------------------------------------
 double g1(double x1, double x2)
 {
@@ -60,21 +50,18 @@ low_level_fragmentation::low_level_fragmentation(const Box& box)
 //------------------------------------------------------------------------------------------
 void low_level_fragmentation::VerticalSplitter(const Box& box, boxes_pair& vertical_splitter_pair)
 {
-	double del = 2.0;
 	double x_min, y_min, width, height, newleft1, newtop1, newwidth1, newheight1, newleft2, newtop2, newwidth2, newheight2;
 	box.GetParameters(x_min, y_min, width, height);
 
-	
 	newleft1 = x_min;
 	newtop1 = y_min;
-	newwidth1 = width / del;
+	newwidth1 = width / 2.0;
 	newheight1 = height;
-
 	Box leftbox(newleft1, newtop1, newwidth1, newheight1);
 
-	newleft2 = x_min + width / del;
+	newleft2 = x_min + width / 2.0;
 	newtop2 = y_min;
-	newwidth2 = width / del;
+	newwidth2 = width / 2.0;
 	newheight2 = height;
 	Box rightbox(newleft2, newtop2, newwidth2, newheight2);
 	vertical_splitter_pair.first = leftbox;
@@ -84,20 +71,19 @@ void low_level_fragmentation::VerticalSplitter(const Box& box, boxes_pair& verti
 //------------------------------------------------------------------------------------------
 void low_level_fragmentation::HorizontalSplitter(const Box& box, boxes_pair& horizontal_splitter_pair)
 {
-	double del = 2.0;
 	double x_min, y_min, width, height, newleft1, newtop1, newwidth1, newheight1, newleft2, newtop2, newwidth2, newheight2;
 	box.GetParameters(x_min, y_min, width, height);
 
 	newleft1 = x_min;
 	newtop1 = y_min;
 	newwidth1 = width;
-	newheight1 = height / del;
+	newheight1 = height / 2.0;
 	Box topbox(newleft1, newtop1, newwidth1, newheight1);
 
 	newleft2 = x_min;
-	newtop2 = y_min + height / del;
+	newtop2 = y_min + height / 2.0;
 	newwidth2 = width;
-	newheight2 = height / del;
+	newheight2 = height / 2.0;
 	Box bottombox(newleft2, newtop2, newwidth2, newheight2);
 	horizontal_splitter_pair.first = topbox;
 	horizontal_splitter_pair.second = bottombox;
@@ -128,11 +114,12 @@ unsigned int low_level_fragmentation::FindTreeDepth()
 	else
 	{
 		boxes_pair new_boxes;
-		// допустим, разобьем начальную область по ширине
+		// äîïóñòèì, ðàçîáüåì íà÷àëüíóþ îáëàñòü ïî øèðèíå
 		VerticalSplitter(current_box, new_boxes);
-		unsigned int tree_depth = 1;
 
 		box_diagonal = new_boxes.first.GetDiagonal();
+
+		unsigned int tree_depth = 1;
 
 		if (box_diagonal <= g_precision)
 		{
@@ -140,7 +127,7 @@ unsigned int low_level_fragmentation::FindTreeDepth()
 		}
 		else
 		{
-			for (;;)
+			for (;; )
 			{
 				GetNewBoxes(new_boxes.first, new_boxes);
 				++tree_depth;
@@ -166,16 +153,16 @@ int low_level_fragmentation::ClasifyBox(const min_max_vectors& vects)
 		if (vects.second[i] < 0)
 			count += 1;
 		if (vects.first[i] > 0)
-			return 1;
+			return 1; // not solution -> return 1
 	}
 
 	if (count == vects.second.size())
-		return 0;		
+		return 0; // solution -> return 0		
 
 	if (vects.first[0] == 0 && vects.second[0] == 0)
-		return 2;
+		return 2; // boundary -> return 2
 
-	return 3;
+	return 3; // new boxes -> return 3
 }
 
 //------------------------------------------------------------------------------------------
@@ -190,20 +177,21 @@ void low_level_fragmentation::GetBoxType(const Box& box)
 	switch (res)
 	{
 
-		case 0: {solution.push_back(box); break; }
-
-		case 1: {not_solution.push_back(box); break; }
-
-		case 2: {boundary.push_back(box); break; }
-
-		case 3:
-		{
-			GetNewBoxes(box, new_pair_of_boxes);
-			temporary_boxes.push_back(new_pair_of_boxes.first);
-			temporary_boxes.push_back(new_pair_of_boxes.second);
-	
-			break;
-		}
+	case 0: {solution->push_back(box); break; }            // solution
+	//case 0: {solution.push_back(box); break; }            // solution
+	case 1: {not_solution->push_back(box); break; } // not solution
+	//case 1: {not_solution.push_back(box); break; } // not solution
+	case 2: {boundary->push_back(box); break; } // boundary
+	//case 2: {boundary.push_back(box); break; } // boundary
+	case 3:
+	{
+		GetNewBoxes(box, new_pair_of_boxes);  // new boxes
+		temporary_boxes->push_back(new_pair_of_boxes.first);
+		temporary_boxes->push_back(new_pair_of_boxes.second);
+		//temporary_boxes.push_back(new_pair_of_boxes.first);
+		//temporary_boxes.push_back(new_pair_of_boxes.second);
+		break;
+	}
 	}
 }
 
@@ -243,43 +231,43 @@ void high_level_analysis::GetMinMax(const Box& box, min_max_vectors& min_max_vec
 	}
 
 	// MIN
-	// функция g1(x1,x2)
+	// ôóíêöèÿ g1(x1,x2)
 	a1min = __min(abs(xmin), abs(xmax));
 	a2min = __min(abs(ymin), abs(ymax));
 	g_min.push_back(g1(a1min, a2min));
 
-	// функция g2(x1,x2)
+	// ôóíêöèÿ g2(x1,x2)
 	a1min = __max(abs(xmin), abs(xmax));
 	a2min = __max(abs(ymin), abs(ymax));
 	g_min.push_back(g2(a1min, a2min));
 
-	// функция g3(x1,x2)
+	// ôóíêöèÿ g3(x1,x2)
 	a1min = __min(abs(xmin - g_l0), abs(xmax - g_l0));
 	a2min = __min(abs(ymin), abs(ymax));
 	g_min.push_back(g3(a1min, a2min));
 
-	// функция g4(x1,x2)
+	// ôóíêöèÿ g4(x1,x2)
 	a1min = __max(abs(xmin - g_l0), abs(xmax - g_l0));
 	a2min = __max(abs(ymin), abs(ymax));
 	g_min.push_back(g4(a1min, a2min));
 
 	// MAX
-	// функция g1(x1,x2)
+	// ôóíêöèÿ g1(x1,x2)
 	a1max = __max(abs(xmin), abs(xmax));
 	a2max = __max(abs(ymin), abs(ymax));
 	g_max.push_back(g1(a1max, a2max));
 
-	// функция g2(x1,x2)
+	// ôóíêöèÿ g2(x1,x2)
 	a1max = __min(abs(xmin), abs(xmax));
 	a2max = __min(abs(ymin), abs(ymax));
 	g_max.push_back(g2(a1max, a2max));
 
-	// функция g3(x1,x2)
+	// ôóíêöèÿ g3(x1,x2)
 	a1max = __max(abs(xmin - g_l0), abs(xmax - g_l0));
 	a2max = __max(abs(ymin), abs(ymax));
 	g_max.push_back(g3(a1max, a2max));
 
-	// функция g4(x1,x2)
+	// ôóíêöèÿ g4(x1,x2)
 	a1max = __min(abs(xmin - g_l0), abs(xmax - g_l0));
 	a2max = __min(abs(ymin), abs(ymax));
 	g_max.push_back(g4(a1max, a2max));
@@ -293,16 +281,15 @@ void high_level_analysis::GetSolution()
 {
 	current_box = Box(-g_l1_max, 0, g_l2_max + g_l0 + g_l1_max, __min(g_l1_max, g_l2_max));
 	std::vector<Box> current_boxes;
-	temporary_boxes.push_back(current_box);
+	temporary_boxes->push_back(current_box);
+	//temporary_boxes.push_back(current_box);
 	int level = FindTreeDepth();
 	for (int i = 0; i < (level + 1); ++i)
 	{
-		//temporary_boxes.move_out(buf_boxes);
-		buf_boxes.assign(temporary_boxes.begin(), temporary_boxes.end());
-
+		temporary_boxes.move_out(buf_boxes);
 		current_boxes = buf_boxes;
 		buf_boxes.clear();
-		for(int j = 0; j < current_boxes.size(); ++j)
+		for (int j = 0; j < current_boxes.size(); ++j)
 			GetBoxType(current_boxes[j]);
 	}
 }
@@ -314,13 +301,11 @@ void WriteResults(const char* file_names[])
 	double x_min, y_min, width, height;
 	vector <Box> temp;
 
-	std::ofstream fsolution(file_names[0]); 
+	std::ofstream fsolution(file_names[0]); // ñîçäà¸ì îáúåêò êëàññà ofstream äëÿ çàïèñè è ñâÿçûâàåì åãî ñ ôàéëîì solution.txt
 	std::ofstream fboundary(file_names[1]);
 	std::ofstream fnot_solution(file_names[2]);
 
-	//solution.move_out(temp);
-	temp.assign(solution.begin(),solution.end());
-
+	solution.move_out(temp);
 	for (int i = 0; i < temp.size(); i++)
 	{
 
@@ -328,18 +313,16 @@ void WriteResults(const char* file_names[])
 		fsolution << x_min << " " << y_min << " " << width << " " << height << '\n';
 	}
 
-	temp.clear();
-	//boundary.move_out(temp);
-	temp.assign(boundary.begin(), boundary.end());
+	temp.clear(); // î÷èùàåì âðåìåííûé âåêòîð
+	boundary.move_out(temp);
 	for (int i = 0; i < temp.size(); i++)
 	{
 		temp[i].GetParameters(x_min, y_min, width, height);
 		fboundary << x_min << " " << y_min << " " << width << " " << height << '\n';
 	}
 
-	temp.clear();
-	//not_solution.move_out(temp);
-	temp.assign(not_solution.begin(), not_solution.end());
+	temp.clear(); // î÷èùàåì âðåìåííûé âåêòîð
+	not_solution.move_out(temp);
 	for (int i = 0; i < temp.size(); i++)
 	{
 		temp[i].GetParameters(x_min, y_min, width, height);
